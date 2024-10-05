@@ -8,9 +8,10 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-2.0.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 A high-performance, non-blocking database driver for PostgreSQL, MySQL, and SQLite, written for Kotlin Native.
-Looking to build efficient, cross-platform applications with Kotlin Native. Check it out: https://github.com/smyrgeorge/sqlx4k
+Looking to build efficient, cross-platform applications with Kotlin Native.
 
 This repository only contains the necessary parts for the `sqldelight` integration.
+If you are looking the driver implementation, you can find it here: https://github.com/smyrgeorge/sqlx4k
 
 📖 [Documentation](https://smyrgeorge.github.io/sqlx4k-sqldelight/)
 
