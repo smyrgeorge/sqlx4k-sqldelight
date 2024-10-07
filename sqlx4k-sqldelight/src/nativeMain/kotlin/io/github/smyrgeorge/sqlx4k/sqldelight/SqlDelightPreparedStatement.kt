@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import app.cash.sqldelight.db.SqlPreparedStatement
-import io.github.smyrgeorge.sqlx4k.impl.ExtendedStatement
+import io.github.smyrgeorge.sqlx4k.impl.statement.ExtendedStatement
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate

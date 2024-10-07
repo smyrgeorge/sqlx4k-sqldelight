@@ -15,6 +15,7 @@ kotlin {
 }
 
 sqldelight {
+    linkSqlite = false
     databases.register("Database") {
         generateAsync = true
         packageName = "db.entities"
