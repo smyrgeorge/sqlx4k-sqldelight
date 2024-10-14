@@ -14,7 +14,7 @@ assertk = "0.28.1"
 # https://github.com/touchlab/Stately
 stately = "2.1.0"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "0.21.0"
+sqlx4k = "0.22.0"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
