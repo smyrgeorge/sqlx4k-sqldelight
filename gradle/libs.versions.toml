@@ -4,7 +4,7 @@ kotlin = "2.0.20"
 # https://github.com/Kotlin/kotlinx-datetime
 kotlinx-datetime = "0.6.1"
 # https://github.com/vanniktech/gradle-maven-publish-plugin
-publish = "0.29.0"
+publish = "0.30.0"
 # https://github.com/cashapp/sqldelight
 sqldelight = "2.0.2"
 # https://github.com/Kotlin/dokka
