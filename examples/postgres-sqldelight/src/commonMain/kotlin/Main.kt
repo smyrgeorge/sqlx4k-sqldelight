@@ -1,19 +1,22 @@
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import db.entities.Customer
 import db.entities.Database
+import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.PostgreSQL
 import io.github.smyrgeorge.sqlx4k.sqldelight.Sqlx4kSqldelightDriver
 import kotlinx.coroutines.runBlocking
 
 fun main() {
     runBlocking {
+        val options = Driver.Pool.Options.builder()
+            .maxConnections(20)
+            .build()
+
         val postgres = PostgreSQL(
-            host = "localhost",
-            port = 15432,
+            url = "postgresql://localhost:15432/test",
             username = "postgres",
             password = "postgres",
-            database = "test",
-            maxConnections = 10
+            options = options
         )
 
         val sqldelightDriver = Sqlx4kSqldelightDriver(postgres)
