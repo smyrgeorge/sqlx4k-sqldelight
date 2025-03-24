@@ -21,8 +21,7 @@ subprojects {
 
     // Dokka config
     run {
-        // Exclude examples.
-        if (projectDir.path.contains("/examples")) return@run
+        if (!project.name.startsWith("sqlx4k")) return@run
         // Run with ./gradlew :dokkaHtmlMultiModule
         apply(plugin = "org.jetbrains.dokka")
     }

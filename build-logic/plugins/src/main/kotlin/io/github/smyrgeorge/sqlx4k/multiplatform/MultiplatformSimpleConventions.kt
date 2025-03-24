@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+@Suppress("unused")
 class MultiplatformSimpleConventions : Plugin<Project> {
     override fun apply(project: Project) {
         val targets = Utils.targetsOf(project)

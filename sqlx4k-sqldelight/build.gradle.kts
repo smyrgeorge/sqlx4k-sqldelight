@@ -8,6 +8,7 @@ kotlin {
         configureEach {
             languageSettings.progressiveMode = true
         }
+        @Suppress("unused")
         val nativeMain by getting {
             dependencies {
                 api(libs.sqlx4k)

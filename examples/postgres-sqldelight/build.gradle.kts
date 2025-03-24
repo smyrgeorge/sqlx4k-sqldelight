@@ -5,6 +5,7 @@ plugins {
 
 kotlin {
     sourceSets {
+        @Suppress("unused")
         val commonMain by getting {
             dependencies {
                 implementation(libs.sqlx4k.postgres)
