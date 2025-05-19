@@ -6,7 +6,7 @@ kotlinx-datetime = "0.6.2"
 # https://github.com/vanniktech/gradle-maven-publish-plugin
 publish = "0.32.0"
 # https://github.com/cashapp/sqldelight
-sqldelight = "2.0.2"
+sqldelight = "2.1.0"
 # https://github.com/Kotlin/dokka
 dokka = "2.0.0"
 # https://github.com/touchlab/Stately
