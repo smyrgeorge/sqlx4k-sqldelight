@@ -2,7 +2,7 @@
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.jvm
 kotlin = "2.2.0"
 # https://github.com/Kotlin/kotlinx-datetime
-kotlinx-datetime = "0.6.2"
+kotlinx-datetime = "0.7.1-0.6.x-compat"
 # https://github.com/vanniktech/gradle-maven-publish-plugin
 publish = "0.33.0"
 # https://github.com/cashapp/sqldelight
