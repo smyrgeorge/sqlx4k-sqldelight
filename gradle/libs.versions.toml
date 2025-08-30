@@ -17,6 +17,7 @@ sqlx4k = "0.71.0"
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradle-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "publish" }
+gradle-dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 sqldeligh = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-dialect-api = { module = "app.cash.sqldelight:dialect-api", version.ref = "sqldelight" }

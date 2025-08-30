@@ -25,10 +25,13 @@ class Sqlx4kSqldelightDriver<T>(private val driver: T) :
     SqlDriver where T : Driver, T : Driver.Pool, T : Driver.Transactional {
 
     override fun execute(
-        identifier: Int?, sql: String, parameters: Int, binders: (SqlPreparedStatement.() -> Unit)?
+        identifier: Int?,
+        sql: String,
+        parameters: Int,
+        binders: (SqlPreparedStatement.() -> Unit)?
     ): QueryResult<Long> = QueryResult.AsyncValue {
         val prepared = SqlDelightPreparedStatement(sql).apply { binders?.invoke(this) }
-        driver.execute(prepared.statement).getOrThrow().toLong()
+        driver.execute(prepared.statement).getOrThrow()
     }
 
     override fun <R> executeQuery(
@@ -51,9 +54,7 @@ class Sqlx4kSqldelightDriver<T>(private val driver: T) :
         }
 
     override fun newTransaction(): QueryResult<Transacter.Transaction> = QueryResult.AsyncValue {
-        transaction
-            ?: SqlDelightTransaction(null, driver.begin().getOrThrow())
-                .also { transaction = it }
+        transaction ?: SqlDelightTransaction(null, driver.begin().getOrThrow()).also { transaction = it }
     }
 
     override fun currentTransaction(): Transacter.Transaction? = transaction

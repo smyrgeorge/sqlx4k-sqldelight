@@ -5,7 +5,7 @@
 ![GitHub License](https://img.shields.io/github/license/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub issues](https://img.shields.io/github/issues/smyrgeorge/sqlx4k-sqldelight)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.1.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.2.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 A high-performance, non-blocking database driver for PostgreSQL, MySQL, and SQLite, written for Kotlin Native.
 Looking to build efficient, cross-platform applications with Kotlin Native.
@@ -51,6 +51,7 @@ Check the examples for more information.
 
 We support the following targets:
 
+- jvm (only PostgreSQL and MySQL are supported at the moment)
 - iosArm64
 - androidNativeX64
 - androidNativeArm64
@@ -59,5 +60,4 @@ We support the following targets:
 - linuxArm64
 - linuxX64
 - mingwX64
-- wasmJs (potential future candidate)
-- jvm (potential future candidate)
+- wasmWasi (potential future candidate)

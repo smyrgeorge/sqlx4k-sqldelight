@@ -1,17 +1,19 @@
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@file:Suppress("unused")
+
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import app.cash.sqldelight.db.SqlPreparedStatement
 import io.github.smyrgeorge.sqlx4k.impl.statement.ExtendedStatement
 import kotlinx.datetime.DateTimePeriod
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalStdlibApi::class)
-@Suppress("unused")
 class SqlDelightPreparedStatement(sql: String) : SqlPreparedStatement {
     var statement = ExtendedStatement(sql)
 

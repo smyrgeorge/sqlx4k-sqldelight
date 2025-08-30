@@ -1,26 +1,30 @@
+@file:OptIn(ExperimentalTime::class)
+
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlCursor
 import io.github.smyrgeorge.sqlx4k.ResultSet
 import kotlinx.datetime.DateTimePeriod
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-@Suppress("unused")
+@Suppress("unused", "RedundantNullableReturnType")
 class SqlDelightCursor(
-    private val result: ResultSet
+    result: ResultSet
 ) : SqlCursor {
+    private var iterator: Iterator<ResultSet.Row> = result.iterator()
     private lateinit var current: ResultSet.Row
 
     override fun next(): QueryResult.AsyncValue<Boolean> = QueryResult.AsyncValue {
-        if (!result.hasNext()) return@AsyncValue false
-        current = result.next()
+        if (!iterator.hasNext()) return@AsyncValue false
+        current = iterator.next()
         true
     }
 
@@ -30,7 +34,7 @@ class SqlDelightCursor(
     fun getShort(index: Int): Short? = getString(index)?.toShort()
     fun getInt(index: Int): Int? = getString(index)?.toInt()
     override fun getLong(index: Int): Long? = getString(index)?.toLong()
-    override fun getString(index: Int): String? = current.get(index).value
+    override fun getString(index: Int): String? = current.get(index).asStringOrNull()
     fun getDate(index: Int): LocalDate? = getString(index)?.let { LocalDate.parse(it) }
     fun getTime(index: Int): LocalTime? = getString(index)?.let { LocalTime.parse(it) }
     fun getLocalTimestamp(index: Int): LocalDateTime? = getString(index)?.replace(" ", "T")
