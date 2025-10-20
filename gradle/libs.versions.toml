@@ -8,7 +8,7 @@ publish = "0.34.0"
 # https://github.com/cashapp/sqldelight
 sqldelight = "2.1.0"
 # https://github.com/Kotlin/dokka
-dokka = "2.0.0"
+dokka = "2.1.0"
 # https://github.com/touchlab/Stately
 stately = "2.1.0"
 # https://github.com/smyrgeorge/sqlx4k
