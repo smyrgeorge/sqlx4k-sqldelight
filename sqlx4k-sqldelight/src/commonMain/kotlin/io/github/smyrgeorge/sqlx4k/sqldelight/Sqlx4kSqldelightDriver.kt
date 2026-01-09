@@ -18,11 +18,10 @@ import kotlinx.coroutines.runBlocking
  * Implementation based on:
  * https://github.com/cashapp/sqldelight/blob/master/drivers/r2dbc-driver/src/main/kotlin/app/cash/sqldelight/driver/r2dbc/R2dbcDriver.kt
  *
- * @param T The type of the underlying driver, which must implement the [Driver], [Driver.Pool], and [Driver.Transactional] interfaces.
+ * @param T The type of the underlying driver, which must implement the [Driver] interface.
  * @property driver The underlying driver instance used to execute SQL statements.
  */
-class Sqlx4kSqldelightDriver<T>(private val driver: T) :
-    SqlDriver where T : Driver, T : Driver.Pool, T : Driver.Transactional {
+class Sqlx4kSqldelightDriver<T : Driver>(private val driver: T) : SqlDriver {
 
     override fun execute(
         identifier: Int?,

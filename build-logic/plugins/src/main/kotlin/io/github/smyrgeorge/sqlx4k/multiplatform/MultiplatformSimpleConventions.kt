@@ -11,6 +11,12 @@ class MultiplatformSimpleConventions : Plugin<Project> {
         val targets = Utils.targetsOf(project)
         project.plugins.apply("org.jetbrains.kotlin.multiplatform")
         project.extensions.configure<KotlinMultiplatformExtension> {
+            // Handle JVM target
+            if ("jvm" in targets) {
+                println("Enabling target jvm")
+                jvm()
+            }
+
             val availableTargets = mapOf(
                 Pair("iosArm64") { iosArm64() },
                 Pair("androidNativeArm64") { androidNativeArm64() },
@@ -23,8 +29,10 @@ class MultiplatformSimpleConventions : Plugin<Project> {
             )
 
             targets.forEach {
-                println("Enabling target $it")
-                availableTargets[it]?.invoke()
+                if (it != "jvm") {
+                    println("Enabling target $it")
+                    availableTargets[it]?.invoke()
+                }
             }
 
             applyDefaultHierarchyTemplate()
