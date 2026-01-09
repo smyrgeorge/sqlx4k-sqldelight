@@ -5,8 +5,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        @Suppress("unused")
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(libs.sqlx4k.postgres)
                 implementation(project(":sqlx4k-sqldelight"))

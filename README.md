@@ -5,10 +5,12 @@
 ![GitHub License](https://img.shields.io/github/license/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub issues](https://img.shields.io/github/issues/smyrgeorge/sqlx4k-sqldelight)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.2.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.3.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
-A high-performance, non-blocking database driver for PostgreSQL, MySQL, and SQLite, written for Kotlin Native.
-Looking to build efficient, cross-platform applications with Kotlin Native.
+A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL, MySQL, and
+SQLite supported.
+
+---
 
 This repository only contains the necessary parts for the `sqldelight` integration.
 If you are looking the driver implementation, you can find it here: https://github.com/smyrgeorge/sqlx4k
@@ -23,7 +25,6 @@ Only `PostgreSQL` and `MySQL` is supported for now.
 
 ```kotlin
 // build.gradle.kts
-
 kotlin {
     sourceSets {
         val commonMain by getting {

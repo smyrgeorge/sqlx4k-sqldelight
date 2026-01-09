@@ -5,7 +5,6 @@ import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.mysql.IMySQL
 import io.github.smyrgeorge.sqlx4k.mysql.mySQL
 import kotlinx.coroutines.runBlocking
-import org.testcontainers.DockerClientFactory
 import org.testcontainers.containers.MySQLContainer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

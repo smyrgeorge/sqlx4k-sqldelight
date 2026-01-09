@@ -5,12 +5,11 @@ plugins {
 }
 
 kotlin {
-    @Suppress("unused")
     sourceSets {
         configureEach {
             languageSettings.progressiveMode = true
         }
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(libs.sqlx4k)
                 api(libs.sqldeligh)
@@ -18,13 +17,13 @@ kotlin {
                 api(libs.stately.concurrency)
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(libs.sqlx4k.postgres)
                 implementation(libs.sqlx4k.mysql)

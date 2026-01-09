@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTime::class)
-
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import app.cash.sqldelight.db.QueryResult
@@ -9,7 +7,6 @@ import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

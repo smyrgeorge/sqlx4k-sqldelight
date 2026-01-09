@@ -6,12 +6,11 @@ plugins {
 
 kotlin {
     explicitApi()
-    @Suppress("unused")
     sourceSets {
         configureEach {
             languageSettings.progressiveMode = true
         }
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
                 api(libs.sqldelight.mysql.dialect)
                 api(libs.sqldelight.dialect.api)

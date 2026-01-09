@@ -5,7 +5,6 @@ import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.postgres.IPostgresSQL
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
 import kotlinx.coroutines.runBlocking
-import org.testcontainers.DockerClientFactory
 import org.testcontainers.containers.PostgreSQLContainer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
