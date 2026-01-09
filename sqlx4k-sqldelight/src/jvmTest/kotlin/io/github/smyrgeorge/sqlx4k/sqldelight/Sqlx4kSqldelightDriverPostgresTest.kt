@@ -40,18 +40,24 @@ class Sqlx4kSqldelightDriverPostgresTest {
 
     @BeforeTest
     fun setup() {
+        println("=== Starting Docker detection ===")
+        // Try to start the container directly instead of using TestContainers' isDockerAvailable
+        // which has issues in WSL2 environments
         dockerAvailable = runCatching {
-            DockerClientFactory.instance().isDockerAvailable
+            println("Attempting to start PostgreSQL container...")
+            postgres.start()
+            println("PostgreSQL container started successfully")
+            true
         }.getOrElse { e ->
-            println("Docker detection failed: ${e.message}")
-            e.printStackTrace()
+            println("Docker/container start failed with exception: ${e.javaClass.name}")
+            println("Error: ${e.message}")
             false
         }
         if (!dockerAvailable) {
             println("Docker not available, skipping Sqlx4kSqldelightDriverPostgresTest...")
             return
         }
-        postgres.start()
+        println("Docker available, running Sqlx4kSqldelightDriverPostgresTest...")
 
         runBlocking {
             val options = ConnectionPool.Options.builder()

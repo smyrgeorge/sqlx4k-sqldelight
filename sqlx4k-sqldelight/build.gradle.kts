@@ -35,3 +35,13 @@ kotlin {
         }
     }
 }
+
+// Configure test tasks to pass Docker environment to TestContainers
+tasks.withType<Test> {
+    environment("DOCKER_HOST", System.getenv("DOCKER_HOST") ?: "unix:///var/run/docker.sock")
+    environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock")
+    environment("TESTCONTAINERS_RYUK_DISABLED", "true")
+    // Set Docker API version to 1.44 (minimum level for modern Docker versions)
+    environment("DOCKER_API_VERSION", "1.44")
+    systemProperty("api.version", "1.44")
+}
