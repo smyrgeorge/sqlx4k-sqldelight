@@ -40,18 +40,24 @@ class Sqlx4kSqldelightDriverMySqlTest {
 
     @BeforeTest
     fun setup() {
+        println("=== Starting Docker detection ===")
+        // Try to start the container directly instead of using TestContainers' isDockerAvailable
+        // which has issues in WSL2 environments
         dockerAvailable = runCatching {
-            DockerClientFactory.instance().isDockerAvailable
+            println("Attempting to start MySQL container...")
+            mysql.start()
+            println("MySQL container started successfully")
+            true
         }.getOrElse { e ->
-            println("Docker detection failed: ${e.message}")
-            e.printStackTrace()
+            println("Docker/container start failed with exception: ${e.javaClass.name}")
+            println("Error: ${e.message}")
             false
         }
         if (!dockerAvailable) {
             println("Docker not available, skipping Sqlx4kSqldelightDriverMySqlTest...")
             return
         }
-        mysql.start()
+        println("Docker available, running Sqlx4kSqldelightDriverMySqlTest...")
 
         runBlocking {
             val options = ConnectionPool.Options.builder()

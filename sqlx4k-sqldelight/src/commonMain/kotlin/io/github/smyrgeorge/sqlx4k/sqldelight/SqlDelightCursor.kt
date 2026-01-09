@@ -28,7 +28,16 @@ class SqlDelightCursor(
         true
     }
 
-    override fun getBoolean(index: Int): Boolean? = getString(index)?.toBoolean()
+    override fun getBoolean(index: Int): Boolean? {
+        return getString(index)?.lowercase()?.let { value ->
+            when (value) {
+                "true", "t", "1" -> true
+                "false", "f", "0" -> false
+                else -> null
+            }
+        }
+    }
+
     override fun getBytes(index: Int): ByteArray? = error("This feature is not yes supported.")
     override fun getDouble(index: Int): Double? = getString(index)?.toDouble()
     fun getShort(index: Int): Short? = getString(index)?.toShort()
