@@ -3,6 +3,8 @@
 kotlin = "2.3.0"
 # https://github.com/Kotlin/kotlinx-datetime
 kotlinx-datetime = "0.7.1-0.6.x-compat"
+# https://github.com/Kotlin/kotlinx.coroutines
+kotlinx-coroutines = "1.10.2"
 # https://github.com/vanniktech/gradle-maven-publish-plugin
 publish = "0.35.0"
 # https://github.com/cashapp/sqldelight
@@ -12,7 +14,9 @@ dokka = "2.1.0"
 # https://github.com/touchlab/Stately
 stately = "2.1.0"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.5.5"
+sqlx4k = "1.5.9"
+# https://github.com/testcontainers/testcontainers-java
+testcontainers = "1.20.2"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -27,6 +31,12 @@ sqldelight-postgresql-dialect = { module = "app.cash.sqldelight:postgresql-diale
 stately-concurrency = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
 sqlx4k = { module = "io.github.smyrgeorge:sqlx4k", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
+sqlx4k-mysql = { module = "io.github.smyrgeorge:sqlx4k-mysql", version.ref = "sqlx4k" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
