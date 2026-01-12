@@ -14,7 +14,7 @@ dokka = "2.1.0"
 # https://github.com/touchlab/Stately
 stately = "2.1.0"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.5.9"
+sqlx4k = "1.5.10"
 # https://github.com/testcontainers/testcontainers-java
 testcontainers = "1.21.4"
 
