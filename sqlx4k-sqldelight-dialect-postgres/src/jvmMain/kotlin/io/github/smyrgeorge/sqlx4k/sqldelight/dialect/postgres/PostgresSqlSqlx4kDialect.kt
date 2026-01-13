@@ -99,8 +99,8 @@ public open class PostgresSqlSqlx4kDialect : SqlDelightDialect by PostgreSqlDial
         DATE(ClassName("kotlinx.datetime", "LocalDate")),
         TIME(ClassName("kotlinx.datetime", "LocalTime")),
         TIMESTAMP(ClassName("kotlinx.datetime", "LocalDateTime")),
-        TIMESTAMP_TIMEZONE(ClassName("kotlinx.datetime", "Instant")),
         INTERVAL(ClassName("kotlinx.datetime", "DateTimePeriod")),
+        TIMESTAMP_TIMEZONE(ClassName("kotlin.time", "Instant")),
         UUID(ClassName("kotlin.uuid", "Uuid"));
 
         override fun prepareStatementBinder(columnIndex: CodeBlock, value: CodeBlock): CodeBlock {

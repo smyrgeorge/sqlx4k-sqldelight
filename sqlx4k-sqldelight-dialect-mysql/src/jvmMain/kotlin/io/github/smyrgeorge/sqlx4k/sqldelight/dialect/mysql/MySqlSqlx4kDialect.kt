@@ -111,7 +111,7 @@ public open class MySqlSqlx4kDialect : SqlDelightDialect by MySqlDialect() {
         DATE(ClassName("kotlinx.datetime", "LocalDate")),
         TIME(ClassName("kotlinx.datetime", "LocalTime")),
         TIMESTAMP(ClassName("kotlinx.datetime", "LocalDateTime")),
-        DATETIME(ClassName("kotlinx.datetime", "Instant")),
+        DATETIME(ClassName("kotlin.time", "Instant")),
         UUID(ClassName("kotlin.uuid", "Uuid"));
 
         override fun prepareStatementBinder(columnIndex: CodeBlock, value: CodeBlock): CodeBlock {
