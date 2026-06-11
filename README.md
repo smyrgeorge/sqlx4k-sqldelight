@@ -5,10 +5,10 @@
 ![GitHub License](https://img.shields.io/github/license/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub issues](https://img.shields.io/github/issues/smyrgeorge/sqlx4k-sqldelight)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.3.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.4.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
-A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL, MySQL, and
-SQLite supported.
+A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL, MySQL/MariaDB,
+and SQLite supported.
 
 ---
 
@@ -21,7 +21,7 @@ If you are looking the driver implementation, you can find it here: https://gith
 
 ## Usage
 
-Only `PostgreSQL` and `MySQL` is supported for now.
+Only `PostgreSQL` and `MySQL/MariaDB` are supported for now.
 
 ```kotlin
 // build.gradle.kts
@@ -52,12 +52,12 @@ Check the examples for more information.
 
 We support the following targets:
 
-- jvm (only PostgreSQL and MySQL are supported at the moment)
+- jvm
 - iosArm64
+- iosSimulatorArm64
 - androidNativeX64
 - androidNativeArm64
 - macosArm64
-- macosX64
 - linuxArm64
 - linuxX64
 - mingwX64
