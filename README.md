@@ -41,7 +41,7 @@ sqldelight {
         generateAsync = true
         packageName = "db.entities"
         dialect("io.github.smyrgeorge:sqlx4k-sqldelight-dialect-postgres:x.y.z")
-        // Or 'io.github.smyrgeorge:sqlx4k-sqldelight-dialect-mysql:x.y.z' for MySQl. 
+        // Or 'io.github.smyrgeorge:sqlx4k-sqldelight-dialect-mysql:x.y.z' for MySQl/MariaDB. 
     }
 }
 ```

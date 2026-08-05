@@ -1,0 +1,29 @@
+CREATE TABLE IF NOT EXISTS product (
+  id BIGINT PRIMARY KEY NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  weight DECIMAL(8, 3),
+  quantity SMALLINT NOT NULL,
+  in_stock BOOLEAN NOT NULL,
+  image BLOB,
+  added_at DATE,
+  restock_time TIME,
+  updated_at DATETIME,
+  created_at TIMESTAMP NOT NULL
+);
+
+insert:
+INSERT INTO product(id, name, price, weight, quantity, in_stock, image, added_at, restock_time, updated_at, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getAllProducts:
+SELECT * FROM product;
+
+getLastCreatedAt:
+SELECT MAX(created_at) FROM product;
+
+getMaxPrice:
+SELECT MAX(price) FROM product;
+
+countProducts:
+SELECT COUNT(*) FROM product;

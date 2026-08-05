@@ -14,4 +14,5 @@ include("sqlx4k-sqldelight-dialect-mysql")
 include("sqlx4k-sqldelight-dialect-postgres")
 
 include("dokka")
+include("examples:mysql-sqldelight")
 include("examples:postgres-sqldelight")
