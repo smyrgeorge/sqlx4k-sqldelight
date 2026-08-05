@@ -9,6 +9,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -78,7 +79,8 @@ class Sqlx4kSqldelightDriverPostgresTest {
                     name VARCHAR(255) NOT NULL,
                     email VARCHAR(255),
                     age INTEGER,
-                    active BOOLEAN DEFAULT true
+                    active BOOLEAN DEFAULT true,
+                    data BYTEA
                 )
                 """.trimIndent()
             ).getOrThrow()
@@ -326,5 +328,45 @@ class Sqlx4kSqldelightDriverPostgresTest {
         }.await()
 
         assertEquals(age, foundAge)
+    }
+
+    @Test
+    fun shouldHandleByteArrayValues() = runBlocking {
+        if (!dockerAvailable) return@runBlocking
+
+        val driver = sqldelightDriver ?: return@runBlocking
+        val id = Uuid.random()
+        val data = byteArrayOf(1, 2, 3, -1, 0, 127, -128)
+
+        // Insert with a byte array
+        driver.execute(
+            identifier = null,
+            sql = "INSERT INTO test_users (id, name, data) VALUES ($1, $2, $3)",
+            parameters = 3
+        ) {
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
+            bindString(1, "Binary User")
+            bindBytes(2, data)
+        }.await()
+
+        // Query and verify the byte array round-trips
+        var found: ByteArray? = null
+        driver.executeQuery(
+            identifier = null,
+            sql = "SELECT data FROM test_users WHERE id = $1",
+            mapper = { cursor ->
+                QueryResult.AsyncValue {
+                    if (cursor.next().await()) {
+                        found = cursor.getBytes(0)
+                    }
+                    Unit
+                }
+            },
+            parameters = 1
+        ) {
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
+        }.await()
+
+        assertContentEquals(data, found)
     }
 }

@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -72,22 +73,27 @@ class SqlDelightCursorTests {
     }
 
     @Test
-    fun `getBoolean parses common boolean representations`() = runTest {
+    fun `getBoolean parses driver boolean representations`() = runTest {
         val cursor = SqlDelightCursor(
-            resultSetOf(row("true", "t", "1", "TRUE", "false", "f", "0", "FALSE", "yes", null))
+            resultSetOf(row("true", "t", "1", "false", "f", "0", null))
         )
         cursor.next().await()
 
         assertEquals(true, cursor.getBoolean(0))
         assertEquals(true, cursor.getBoolean(1))
         assertEquals(true, cursor.getBoolean(2))
-        assertEquals(true, cursor.getBoolean(3))
+        assertEquals(false, cursor.getBoolean(3))
         assertEquals(false, cursor.getBoolean(4))
         assertEquals(false, cursor.getBoolean(5))
-        assertEquals(false, cursor.getBoolean(6))
-        assertEquals(false, cursor.getBoolean(7))
-        assertNull(cursor.getBoolean(8)) // unrecognized representation
-        assertNull(cursor.getBoolean(9))
+        assertNull(cursor.getBoolean(6))
+    }
+
+    @Test
+    fun `getBoolean fails on unrecognized values`() = runTest {
+        val cursor = SqlDelightCursor(resultSetOf(row("yes")))
+        cursor.next().await()
+
+        assertFailsWith<IllegalStateException> { cursor.getBoolean(0) }
     }
 
     @Test
@@ -127,11 +133,35 @@ class SqlDelightCursorTests {
     }
 
     @Test
-    fun `getBytes is not supported`() = runTest {
-        val cursor = SqlDelightCursor(resultSetOf(row("bytes")))
+    fun `getBytes decodes PostgreSQL-style hex values`() = runTest {
+        val cursor = SqlDelightCursor(resultSetOf(row("\\x0102ff")))
         cursor.next().await()
 
-        assertFailsWith<IllegalStateException> { cursor.getBytes(0) }
+        assertContentEquals(byteArrayOf(1, 2, -1), cursor.getBytes(0))
+    }
+
+    @Test
+    fun `getBytes decodes plain hex values`() = runTest {
+        val cursor = SqlDelightCursor(resultSetOf(row("0a0b0c")))
+        cursor.next().await()
+
+        assertContentEquals(byteArrayOf(10, 11, 12), cursor.getBytes(0))
+    }
+
+    @Test
+    fun `getBytes returns null for null values`() = runTest {
+        val cursor = SqlDelightCursor(resultSetOf(row(null as String?)))
+        cursor.next().await()
+
+        assertNull(cursor.getBytes(0))
+    }
+
+    @Test
+    fun `getBytes fails on non-hex values`() = runTest {
+        val cursor = SqlDelightCursor(resultSetOf(row("not-hex")))
+        cursor.next().await()
+
+        assertFailsWith<IllegalArgumentException> { cursor.getBytes(0) }
     }
 
     @Test

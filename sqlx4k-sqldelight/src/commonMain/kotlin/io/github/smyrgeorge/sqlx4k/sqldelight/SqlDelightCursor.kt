@@ -3,6 +3,8 @@ package io.github.smyrgeorge.sqlx4k.sqldelight
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlCursor
 import io.github.smyrgeorge.sqlx4k.ResultSet
+import io.github.smyrgeorge.sqlx4k.impl.extensions.asBooleanOrNull
+import io.github.smyrgeorge.sqlx4k.impl.extensions.asByteArrayOrNull
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -22,17 +24,8 @@ class SqlDelightCursor(
         true
     }
 
-    override fun getBoolean(index: Int): Boolean? {
-        return getString(index)?.lowercase()?.let { value ->
-            when (value) {
-                "true", "t", "1" -> true
-                "false", "f", "0" -> false
-                else -> null
-            }
-        }
-    }
-
-    override fun getBytes(index: Int): ByteArray = error("This feature is not yet supported.")
+    override fun getBoolean(index: Int): Boolean? = current.get(index).asBooleanOrNull()
+    override fun getBytes(index: Int): ByteArray? = current.get(index).asByteArrayOrNull()
     override fun getDouble(index: Int): Double? = getString(index)?.toDouble()
     fun getShort(index: Int): Short? = getString(index)?.toShort()
     fun getInt(index: Int): Int? = getString(index)?.toInt()
