@@ -59,7 +59,7 @@ public open class MySqlSqlx4kDialect : SqlDelightDialect by MySqlDialect() {
     override fun typeResolver(parentResolver: TypeResolver): TypeResolver =
         MySqlSqlx4kTypeResolver(parentResolver)
 
-    private class MySqlSqlx4kTypeResolver(parentResolver: TypeResolver) : TypeResolver {
+    internal class MySqlSqlx4kTypeResolver(parentResolver: TypeResolver) : TypeResolver {
         private val parent = MySqlTypeResolver(parentResolver)
 
         override fun definitionType(typeName: SqlTypeName): IntermediateType = with(typeName) {
@@ -126,13 +126,14 @@ public open class MySqlSqlx4kDialect : SqlDelightDialect by MySqlDialect() {
          * reference JVM-only types and cursor/binder methods that do not exist in the sqlx4k
          * runtime.
          */
-        private fun IntermediateType.remapped(): IntermediateType {
+        internal fun IntermediateType.remapped(): IntermediateType {
             // The upstream enum (app.cash.sqldelight.dialects.mysql.MySqlType) is internal,
-            // so its entries are matched by name instead of by reference.
+            // so its entries are matched by name instead of by reference. Entries with a body
+            // compile to anonymous subclasses, so the declaring enum class is used.
             val upstream = dialectType
-            if (upstream !is Enum<*> ||
-                upstream.javaClass.name != "app.cash.sqldelight.dialects.mysql.MySqlType"
-            ) return this
+            if (upstream !is Enum<*>) return this
+            val enumClass = upstream.javaClass.let { if (it.isEnum) it else it.superclass }
+            if (enumClass.name != "app.cash.sqldelight.dialects.mysql.MySqlType") return this
             val remapped: DialectType = when (upstream.name) {
                 "TINY_INT" -> MySqlType.TINY_INT
                 "TINY_INT_BOOL" -> MySqlType.TINY_INT_BOOL
@@ -154,7 +155,7 @@ public open class MySqlSqlx4kDialect : SqlDelightDialect by MySqlDialect() {
         }
     }
 
-    private enum class MySqlType(override val javaType: TypeName) : DialectType {
+    internal enum class MySqlType(override val javaType: TypeName) : DialectType {
         TINY_INT_BOOL(BOOLEAN) {
             override fun decode(value: CodeBlock) = CodeBlock.of("%L == 1L", value)
             override fun encode(value: CodeBlock) = CodeBlock.of("if (%L) 1L else 0L", value)

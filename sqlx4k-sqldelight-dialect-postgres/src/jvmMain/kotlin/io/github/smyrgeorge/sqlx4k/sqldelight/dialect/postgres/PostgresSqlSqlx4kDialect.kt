@@ -59,7 +59,7 @@ public open class PostgresSqlSqlx4kDialect : SqlDelightDialect by PostgreSqlDial
     override fun typeResolver(parentResolver: TypeResolver): TypeResolver =
         PostgreSqlSqlx4kTypeResolver(parentResolver)
 
-    private class PostgreSqlSqlx4kTypeResolver(parentResolver: TypeResolver) : TypeResolver {
+    internal class PostgreSqlSqlx4kTypeResolver(parentResolver: TypeResolver) : TypeResolver {
         private val parent = PostgreSqlTypeResolver(parentResolver)
 
         override fun definitionType(typeName: SqlTypeName): IntermediateType = with(typeName) {
@@ -127,7 +127,7 @@ public open class PostgresSqlSqlx4kDialect : SqlDelightDialect by PostgreSqlDial
          * this remapping the generated code would reference JVM-only types and cursor/binder
          * methods that do not exist in the sqlx4k runtime.
          */
-        private fun IntermediateType.remapped(): IntermediateType {
+        internal fun IntermediateType.remapped(): IntermediateType {
             val remapped: DialectType = when (dialectType) {
                 UpstreamPostgreSqlType.SMALL_INT -> PostgreSqlType.SMALL_INT
                 UpstreamPostgreSqlType.INTEGER -> PostgreSqlType.INTEGER
@@ -160,7 +160,7 @@ public open class PostgresSqlSqlx4kDialect : SqlDelightDialect by PostgreSqlDial
         }
     }
 
-    private enum class PostgreSqlType(override val javaType: TypeName) : DialectType {
+    internal enum class PostgreSqlType(override val javaType: TypeName) : DialectType {
         SMALL_INT(SHORT),
         INTEGER(INT),
         BIG_INT(LONG),

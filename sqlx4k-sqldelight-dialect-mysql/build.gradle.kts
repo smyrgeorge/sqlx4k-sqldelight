@@ -17,5 +17,11 @@ kotlin {
                 compileOnly(libs.sqldelight.compiler.env)
             }
         }
+        jvmTest {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.sqldelight.compiler.env)
+            }
+        }
     }
 }
