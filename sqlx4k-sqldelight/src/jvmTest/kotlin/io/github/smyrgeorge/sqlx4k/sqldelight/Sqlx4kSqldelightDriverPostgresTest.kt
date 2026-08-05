@@ -106,7 +106,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             sql = "INSERT INTO test_users (id, name, email, age) VALUES ($1, $2, $3, $4)",
             parameters = 4
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
             bindString(1, "John Doe")
             bindString(2, "john@example.com")
             bindLong(3, 30)
@@ -131,7 +131,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             sql = "INSERT INTO test_users (id, name, email) VALUES ($1, $2, $3)",
             parameters = 3
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
             bindString(1, name)
             bindString(2, "jane@example.com")
         }.await()
@@ -151,7 +151,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             },
             parameters = 1
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
         }.await()
 
         assertEquals(name, foundName)
@@ -170,7 +170,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             sql = "INSERT INTO test_users (id, name, email) VALUES ($1, $2, $3)",
             parameters = 3
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
             bindString(1, "No Email User")
             bindString(2, null)
         }.await()
@@ -190,7 +190,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             },
             parameters = 1
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
         }.await()
 
         assertEquals(null, email)
@@ -222,7 +222,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
                 sql = "INSERT INTO test_users (id, name) VALUES ($1, $2)",
                 parameters = 2
             ) {
-                bindString(0, Uuid.random().toString())
+                (this as SqlDelightPreparedStatement).bindUuid(0, Uuid.random())
                 bindString(1, name)
             }.await()
         }
@@ -262,7 +262,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             sql = "INSERT INTO test_users (id, name, active) VALUES ($1, $2, $3)",
             parameters = 3
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
             bindString(1, "Active User")
             bindBoolean(2, true)
         }.await()
@@ -282,7 +282,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             },
             parameters = 1
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
         }.await()
 
         assertEquals(true, isActive)
@@ -302,7 +302,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             sql = "INSERT INTO test_users (id, name, age) VALUES ($1, $2, $3)",
             parameters = 3
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
             bindString(1, "Aged User")
             bindLong(2, age)
         }.await()
@@ -322,7 +322,7 @@ class Sqlx4kSqldelightDriverPostgresTest {
             },
             parameters = 1
         ) {
-            bindString(0, id.toString())
+            (this as SqlDelightPreparedStatement).bindUuid(0, id)
         }.await()
 
         assertEquals(age, foundAge)

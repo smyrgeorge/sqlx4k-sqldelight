@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import app.cash.sqldelight.db.SqlPreparedStatement
@@ -10,58 +8,80 @@ import kotlinx.datetime.LocalTime
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
+/**
+ * A [SqlPreparedStatement] implementation that binds values to an [ExtendedStatement].
+ *
+ * Values are bound as-is (no local rendering): the underlying sqlx4k driver sends them to the
+ * database server as native prepared-statement parameters. `null` values are bound as typed
+ * nulls so the server receives the intended SQL type.
+ */
 class SqlDelightPreparedStatement(sql: String) : SqlPreparedStatement {
-    var statement = ExtendedStatement(sql)
+    val statement = ExtendedStatement(sql)
 
     override fun bindBoolean(index: Int, boolean: Boolean?) {
-        statement = statement.bind(index, boolean)
+        if (boolean == null) statement.bindNull(index, Boolean::class)
+        else statement.bind(index, boolean)
     }
 
     override fun bindBytes(index: Int, bytes: ByteArray?) {
-        statement.bind(index, bytes?.toHexString()?.let { "\\x$it" })
+        if (bytes == null) statement.bindNull(index, ByteArray::class)
+        else statement.bind(index, bytes)
     }
 
     override fun bindDouble(index: Int, double: Double?) {
-        statement = statement.bind(index, double)
+        if (double == null) statement.bindNull(index, Double::class)
+        else statement.bind(index, double)
     }
 
     fun bindShort(index: Int, short: Short?) {
-        statement = statement.bind(index, short)
+        if (short == null) statement.bindNull(index, Short::class)
+        else statement.bind(index, short)
     }
 
     fun bindInt(index: Int, int: Int?) {
-        statement = statement.bind(index, int)
+        if (int == null) statement.bindNull(index, Int::class)
+        else statement.bind(index, int)
     }
 
     override fun bindLong(index: Int, long: Long?) {
-        statement = statement.bind(index, long)
+        if (long == null) statement.bindNull(index, Long::class)
+        else statement.bind(index, long)
     }
 
     override fun bindString(index: Int, string: String?) {
-        statement = statement.bind(index, string)
+        if (string == null) statement.bindNull(index, String::class)
+        else statement.bind(index, string)
     }
 
     fun bindDate(index: Int, value: LocalDate?) {
-        statement = statement.bind(index, value?.toString())
+        if (value == null) statement.bindNull(index, LocalDate::class)
+        else statement.bind(index, value)
     }
 
     fun bindTime(index: Int, value: LocalTime?) {
-        statement = statement.bind(index, value?.toString())
+        if (value == null) statement.bindNull(index, LocalTime::class)
+        else statement.bind(index, value)
     }
 
     fun bindLocalTimestamp(index: Int, value: LocalDateTime?) {
-        statement = statement.bind(index, value?.toString())
+        if (value == null) statement.bindNull(index, LocalDateTime::class)
+        else statement.bind(index, value)
     }
 
     fun bindTimestamp(index: Int, value: Instant?) {
-        statement = statement.bind(index, value?.toString())
+        if (value == null) statement.bindNull(index, Instant::class)
+        else statement.bind(index, value)
     }
 
     fun bindInterval(index: Int, value: DateTimePeriod?) {
-        statement = statement.bind(index, value?.toString())
+        // There is no native interval parameter type; bind the ISO-8601 representation as text
+        // and let the server cast it to the interval type.
+        if (value == null) statement.bindNull(index, String::class)
+        else statement.bind(index, value.toString())
     }
 
     fun bindUuid(index: Int, value: Uuid?) {
-        statement = statement.bind(index, value?.toString())
+        if (value == null) statement.bindNull(index, Uuid::class)
+        else statement.bind(index, value)
     }
 }

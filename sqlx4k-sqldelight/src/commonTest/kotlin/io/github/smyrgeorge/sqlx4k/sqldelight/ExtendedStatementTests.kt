@@ -1,16 +1,24 @@
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
+import io.github.smyrgeorge.sqlx4k.Dialect
 import io.github.smyrgeorge.sqlx4k.ResultSet
 import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.ValueEncoder
 import io.github.smyrgeorge.sqlx4k.ValueEncoderRegistry
+import io.github.smyrgeorge.sqlx4k.impl.types.TypedNull
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
+import kotlin.test.assertIs
 
 class ExtendedStatementTests {
+
+    private fun ExtendedStatement.renderPostgres(encoders: ValueEncoderRegistry = ValueEncoderRegistry.EMPTY) =
+        renderNativeQuery(Dialect.PostgreSQL, encoders)
+
+    private fun ExtendedStatement.renderMySql(encoders: ValueEncoderRegistry = ValueEncoderRegistry.EMPTY) =
+        renderNativeQuery(Dialect.MySQL, encoders)
 
     @Test
     fun `Basic test for PostgreSQL-style positional parameters with integers`() {
@@ -18,20 +26,21 @@ class ExtendedStatementTests {
         val res = ExtendedStatement(sql)
             .bind(0, 65)
             .bind(1, 66)
-            .render()
+            .renderPostgres()
 
-        assertContains(res, "id > 65")
-        assertContains(res, "id < 66")
+        assertEquals("SELECT * FROM users WHERE id > $1 AND id < $2", res.sql)
+        assertEquals(listOf<Any?>(65, 66), res.values)
     }
 
     @Test
-    fun `Basic test for PostgreSQL-style positional parameters with strings`() {
+    fun `Values are not rendered into the SQL string`() {
         val sql = "SELECT * FROM users WHERE username = $1"
         val res = ExtendedStatement(sql)
             .bind(0, "test_user")
-            .render()
+            .renderPostgres()
 
-        assertContains(res, "username = 'test_user'")
+        assertEquals("SELECT * FROM users WHERE username = $1", res.sql)
+        assertEquals(listOf<Any?>("test_user"), res.values)
     }
 
     @Test
@@ -40,10 +49,9 @@ class ExtendedStatementTests {
         val res = ExtendedStatement(sql)
             .bind(1, 66)
             .bind(0, 65)
-            .render()
+            .renderPostgres()
 
-        assertContains(res, "id > 65")
-        assertContains(res, "id < 66")
+        assertEquals(listOf<Any?>(65, 66), res.values)
     }
 
     @Test
@@ -52,31 +60,20 @@ class ExtendedStatementTests {
         val res = ExtendedStatement(sql)
             .bind(0, 123)
             .bind(1, null)
-            .render()
+            .renderPostgres()
 
-        assertEquals("SELECT * FROM users WHERE id = 123 OR username = null", res)
+        assertEquals(listOf<Any?>(123, null), res.values)
     }
 
     @Test
-    fun `PostgreSQL-style positional parameters with boolean values`() {
-        val sql = "SELECT * FROM users WHERE is_active = $1 AND is_verified = $2"
+    fun `PostgreSQL-style positional parameters with typed null values`() {
+        val sql = "SELECT * FROM users WHERE username = $1"
         val res = ExtendedStatement(sql)
-            .bind(0, true)
-            .bind(1, false)
-            .render()
+            .bindNull(0, String::class)
+            .renderPostgres()
 
-        assertEquals("SELECT * FROM users WHERE is_active = true AND is_verified = false", res)
-    }
-
-    @Test
-    fun `PostgreSQL-style positional parameters with empty strings`() {
-        val sql = "SELECT * FROM users WHERE name = $1 OR bio = $2"
-        val res = ExtendedStatement(sql)
-            .bind(0, "")
-            .bind(1, "   ")
-            .render()
-
-        assertEquals("SELECT * FROM users WHERE name = '' OR bio = '   '", res)
+        val value = assertIs<TypedNull>(res.values.single())
+        assertEquals(String::class, value.type)
     }
 
     @Test
@@ -85,9 +82,9 @@ class ExtendedStatementTests {
         val res = ExtendedStatement(sql)
             .bind(0, 123)
             .bind(0, 456) // Should override the previous value
-            .render()
+            .renderPostgres()
 
-        assertEquals("SELECT * FROM users WHERE id = 456", res)
+        assertEquals(listOf<Any?>(456), res.values)
     }
 
     @Test
@@ -110,44 +107,24 @@ class ExtendedStatementTests {
         // Not binding the second parameter
 
         val exception = assertFailsWith<SQLError> {
-            statement.render()
+            statement.renderPostgres()
         }
 
         assertEquals(SQLError.Code.PositionalParameterValueNotSupplied, exception.code)
     }
 
     @Test
-    fun `PostgreSQL-style positional parameters - SQL injection prevention`() {
-        val sql = "SELECT * FROM users WHERE username = $1"
-        val maliciousUsername = "admin'; DROP TABLE users; --"
-
-        val res = ExtendedStatement(sql)
-            .bind(0, maliciousUsername)
-            .render()
-
-        assertContains(res, "username = 'admin''; DROP TABLE users; --'")
-        assertFalse(res.contains("username = 'admin'; DROP TABLE users; --'"))
-    }
-
-    @Test
     fun `PostgreSQL-style positional parameters - multiple parameters with various types`() {
         val sql = "INSERT INTO users (username, age, is_admin, created_at) VALUES ($1, $2, $3, $4)"
-        val username = "test_user"
-        val age = 25
-        val isAdmin = false
-        val createdAt = "2023-01-01"
-
         val res = ExtendedStatement(sql)
-            .bind(0, username)
-            .bind(1, age)
-            .bind(2, isAdmin)
-            .bind(3, createdAt)
-            .render()
+            .bind(0, "test_user")
+            .bind(1, 25)
+            .bind(2, false)
+            .bind(3, "2023-01-01")
+            .renderPostgres()
 
-        assertContains(res, "VALUES ('test_user'")
-        assertContains(res, "25")
-        assertContains(res, "false")
-        assertContains(res, "'2023-01-01'")
+        assertEquals("INSERT INTO users (username, age, is_admin, created_at) VALUES ($1, $2, $3, $4)", res.sql)
+        assertEquals(listOf<Any?>("test_user", 25, false, "2023-01-01"), res.values)
     }
 
     @Test
@@ -162,45 +139,11 @@ class ExtendedStatementTests {
             .register(CustomTypeEncoder())
 
         val sql = "SELECT * FROM data WHERE custom_field = $1"
-        val customValue = CustomType("custom_value")
-
         val res = ExtendedStatement(sql)
-            .bind(0, customValue)
-            .render(encoders)
+            .bind(0, CustomType("custom_value"))
+            .renderPostgres(encoders)
 
-        assertContains(res, "custom_field = 'custom_value'")
-    }
-
-    @Test
-    fun `PostgreSQL-style positional parameters with special characters in strings`() {
-        val sql = "SELECT * FROM users WHERE message = $1"
-        val res = ExtendedStatement(sql)
-            .bind(0, "Message with 'quotes' and \"double quotes\" and \\ backslashes")
-            .render()
-
-        assertContains(res, "message = 'Message with ''quotes'' and \"double quotes\" and \\ backslashes'")
-    }
-
-    @Test
-    fun `PostgreSQL-style positional parameters with decimal numbers`() {
-        val sql = "SELECT * FROM products WHERE price > $1 AND weight < $2"
-        val res = ExtendedStatement(sql)
-            .bind(0, 19.99)
-            .bind(1, 2.5)
-            .render()
-
-        assertContains(res, "price > 19.99")
-        assertContains(res, "weight < 2.5")
-    }
-
-    @Test
-    fun `PostgreSQL-style positional parameters with large numbers`() {
-        val sql = "SELECT * FROM metrics WHERE value = $1"
-        val res = ExtendedStatement(sql)
-            .bind(0, 9223372036854775807L) // Long.MAX_VALUE
-            .render()
-
-        assertContains(res, "value = 9223372036854775807")
+        assertEquals(listOf<Any?>("custom_value"), res.values)
     }
 
     @Test
@@ -208,9 +151,11 @@ class ExtendedStatementTests {
         val sql = "SELECT * FROM users WHERE id = $1 OR parent_id = $1"
         val res = ExtendedStatement(sql)
             .bind(0, 123)
-            .render()
+            .renderPostgres()
 
-        assertEquals("SELECT * FROM users WHERE id = 123 OR parent_id = 123", res)
+        // The value is collected once per occurrence and placeholders are renumbered sequentially.
+        assertEquals("SELECT * FROM users WHERE id = $1 OR parent_id = $2", res.sql)
+        assertEquals(listOf<Any?>(123, 123), res.values)
     }
 
     @Test
@@ -222,34 +167,10 @@ class ExtendedStatementTests {
             .bind(2, 3)
             .bind(3, 4)
             .bind(4, 5)
-            .render()
+            .renderPostgres()
 
-        assertEquals("SELECT * FROM users WHERE id IN (1, 2, 3, 4, 5)", res)
-    }
-
-    @Test
-    fun `PostgreSQL-style positional parameters with dates or timestamps`() {
-        val sql = "SELECT * FROM events WHERE created_at > $1"
-        val res = ExtendedStatement(sql)
-            .bind(0, "2023-06-15T14:30:00Z")
-            .render()
-
-        assertContains(res, "created_at > '2023-06-15T14:30:00Z'")
-    }
-
-    @Test
-    fun `PostgreSQL-style positional parameters inside complex expressions`() {
-        val sql = "SELECT * FROM users WHERE (age BETWEEN $1 AND $2) OR (salary > $3 AND department = $4)"
-        val res = ExtendedStatement(sql)
-            .bind(0, 25)
-            .bind(1, 45)
-            .bind(2, 50000)
-            .bind(3, "Engineering")
-            .render()
-
-        assertContains(res, "age BETWEEN 25 AND 45")
-        assertContains(res, "salary > 50000")
-        assertContains(res, "department = 'Engineering'")
+        assertEquals("SELECT * FROM users WHERE id IN ($1, $2, $3, $4, $5)", res.sql)
+        assertEquals(listOf<Any?>(1, 2, 3, 4, 5), res.values)
     }
 
     @Test
@@ -258,10 +179,83 @@ class ExtendedStatementTests {
         val statement = ExtendedStatement(sql)
 
         val exception = assertFailsWith<SQLError> {
-            statement.render() // No parameters bound
+            statement.renderPostgres() // No parameters bound
         }
 
         assertEquals(SQLError.Code.PositionalParameterValueNotSupplied, exception.code)
+    }
+
+    @Test
+    fun `Statement without parameters renders unchanged`() {
+        val sql = "SELECT * FROM users"
+        val res = ExtendedStatement(sql).renderPostgres()
+
+        assertEquals(sql, res.sql)
+        assertEquals(emptyList(), res.values)
+    }
+
+    // ---- MySQL dialect rendering of PostgreSQL-style placeholders ----
+
+    @Test
+    fun `MySQL dialect rewrites dollar placeholders to question marks`() {
+        val sql = "SELECT * FROM users WHERE id > $1 AND id < $2"
+        val res = ExtendedStatement(sql)
+            .bind(0, 65)
+            .bind(1, 66)
+            .renderMySql()
+
+        assertEquals("SELECT * FROM users WHERE id > ? AND id < ?", res.sql)
+        assertEquals(listOf<Any?>(65, 66), res.values)
+    }
+
+    @Test
+    fun `MySQL dialect duplicates values for repeated placeholders`() {
+        val sql = "SELECT * FROM users WHERE id = $1 OR parent_id = $1"
+        val res = ExtendedStatement(sql)
+            .bind(0, 123)
+            .renderMySql()
+
+        assertEquals("SELECT * FROM users WHERE id = ? OR parent_id = ?", res.sql)
+        assertEquals(listOf<Any?>(123, 123), res.values)
+    }
+
+    // ---- Base '?' positional parameters (e.g. SQLDelight MySQL dialect) ----
+
+    @Test
+    fun `question mark placeholders are bound through the base statement`() {
+        val sql = "INSERT INTO users (id, name) VALUES (?, ?)"
+        val res = ExtendedStatement(sql)
+            .bind(0, 1)
+            .bind(1, "John")
+            .renderMySql()
+
+        assertEquals("INSERT INTO users (id, name) VALUES (?, ?)", res.sql)
+        assertEquals(listOf<Any?>(1, "John"), res.values)
+    }
+
+    @Test
+    fun `question mark placeholders render to dollar placeholders for PostgreSQL`() {
+        val sql = "INSERT INTO users (id, name) VALUES (?, ?)"
+        val res = ExtendedStatement(sql)
+            .bind(0, 1)
+            .bind(1, "John")
+            .renderPostgres()
+
+        assertEquals("INSERT INTO users (id, name) VALUES ($1, $2)", res.sql)
+        assertEquals(listOf<Any?>(1, "John"), res.values)
+    }
+
+    @Test
+    fun `question mark placeholders support typed nulls`() {
+        val sql = "INSERT INTO users (id, name) VALUES (?, ?)"
+        val res = ExtendedStatement(sql)
+            .bind(0, 1)
+            .bindNull(1, String::class)
+            .renderMySql()
+
+        assertEquals(1, res.values[0])
+        val value = assertIs<TypedNull>(res.values[1])
+        assertEquals(String::class, value.type)
     }
 
     // ---- SQL contexts: comments, quotes, and dollar-quoted strings ----
@@ -272,8 +266,9 @@ class ExtendedStatementTests {
             select 1 -- comment with ? and :name and $1
             , 2 as two
         """.trimIndent()
-        val rendered = ExtendedStatement(sql).render()
-        assertContains(rendered, "-- comment with ? and :name and $1")
+        val res = ExtendedStatement(sql).renderPostgres()
+        assertContains(res.sql, "-- comment with ? and :name and $1")
+        assertEquals(emptyList(), res.values)
     }
 
     @Test
@@ -282,11 +277,12 @@ class ExtendedStatementTests {
             /* block with placeholders $2 */
             select $2 as pg
         """.trimIndent()
-        val rendered = ExtendedStatement(sql)
+        val res = ExtendedStatement(sql)
             .bind(1, 5)
-            .render()
-        assertContains(rendered, "/* block with placeholders $2 */")
-        assertContains(rendered, "select 5 as pg")
+            .renderPostgres()
+        assertContains(res.sql, "/* block with placeholders $2 */")
+        assertContains(res.sql, "select $1 as pg")
+        assertEquals(listOf<Any?>(5), res.values)
     }
 
     @Test
@@ -294,23 +290,25 @@ class ExtendedStatementTests {
         val sql = """
             select $$ body with ? and :name and $3 $$ as txt, $3 as pg
         """.trimIndent()
-        val rendered = ExtendedStatement(sql).bind(2, 11).render()
-        assertContains(rendered, "$$ body with ? and :name and $3 $$")
-        assertContains(rendered, "11 as pg")
+        val res = ExtendedStatement(sql).bind(2, 11).renderPostgres()
+        assertContains(res.sql, "$$ body with ? and :name and $3 $$")
+        assertContains(res.sql, "$1 as pg")
+        assertEquals(listOf<Any?>(11), res.values)
     }
 
     @Test
     fun `extended statement supports high indices like dollar10`() {
         val sql = "select $10 as v"
-        val rendered = ExtendedStatement(sql).bind(9, 123).render()
-        assertContains(rendered, "select 123 as v")
+        val res = ExtendedStatement(sql).bind(9, 123).renderPostgres()
+        assertEquals("select $1 as v", res.sql)
+        assertEquals(listOf<Any?>(123), res.values)
     }
 
     @Test
     fun `extended statement errors when used parameter missing`() {
         val sql = "select $2 as v"
         val ex = assertFailsWith<SQLError> {
-            ExtendedStatement(sql).render()
+            ExtendedStatement(sql).renderPostgres()
         }
         assertEquals(SQLError.Code.PositionalParameterValueNotSupplied, ex.code)
     }
@@ -320,11 +318,12 @@ class ExtendedStatementTests {
         // $1$ should NOT be recognized as a dollar-quoted string delimiter.
         // PostgreSQL requires dollar tag identifiers to start with a letter or underscore.
         val sql = "select $1 as a, $2 as b"
-        val rendered = ExtendedStatement(sql)
+        val res = ExtendedStatement(sql)
             .bind(0, 10)
             .bind(1, 20)
-            .render()
-        assertEquals("select 10 as a, 20 as b", rendered)
+            .renderPostgres()
+        assertEquals("select $1 as a, $2 as b", res.sql)
+        assertEquals(listOf<Any?>(10, 20), res.values)
     }
 
     @Test
@@ -332,11 +331,12 @@ class ExtendedStatementTests {
         // If $1$ were mistakenly treated as a dollar tag, the scanner would enter
         // dollar-quoted mode and swallow everything until the next $1$.
         val sql = "select $1, $2 from t"
-        val rendered = ExtendedStatement(sql)
+        val res = ExtendedStatement(sql)
             .bind(0, "a")
             .bind(1, "b")
-            .render()
-        assertEquals("select 'a', 'b' from t", rendered)
+            .renderPostgres()
+        assertEquals("select $1, $2 from t", res.sql)
+        assertEquals(listOf<Any?>("a", "b"), res.values)
     }
 
     @Test
@@ -344,10 +344,11 @@ class ExtendedStatementTests {
         val sql = """
             /* outer /* $1 */ still comment */ select $1 as val
         """.trimIndent()
-        val rendered = ExtendedStatement(sql)
+        val res = ExtendedStatement(sql)
             .bind(0, 99)
-            .render()
-        assertContains(rendered, "/* outer /* $1 */ still comment */")
-        assertContains(rendered, "select 99 as val")
+            .renderPostgres()
+        assertContains(res.sql, "/* outer /* $1 */ still comment */")
+        assertContains(res.sql, "select $1 as val")
+        assertEquals(listOf<Any?>(99), res.values)
     }
 }

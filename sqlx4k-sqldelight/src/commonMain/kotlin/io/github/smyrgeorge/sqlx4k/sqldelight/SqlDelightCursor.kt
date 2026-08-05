@@ -10,7 +10,6 @@ import kotlinx.datetime.LocalTime
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-@Suppress("unused")
 class SqlDelightCursor(
     result: ResultSet
 ) : SqlCursor {
