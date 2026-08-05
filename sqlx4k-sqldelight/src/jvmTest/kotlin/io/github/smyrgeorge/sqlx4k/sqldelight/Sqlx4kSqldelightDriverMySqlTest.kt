@@ -5,7 +5,7 @@ import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.mysql.IMySQL
 import io.github.smyrgeorge.sqlx4k.mysql.mySQL
 import kotlinx.coroutines.runBlocking
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -25,7 +25,7 @@ import kotlin.uuid.Uuid
  */
 class Sqlx4kSqldelightDriverMySqlTest {
 
-    private val mysql = MySQLContainer<Nothing>("mysql:8.0").apply {
+    private val mysql = MySQLContainer("mysql:8.0").apply {
         withDatabaseName("test_db")
         withUsername("test")
         withPassword("test")

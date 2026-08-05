@@ -5,7 +5,7 @@ import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.postgres.IPostgresSQL
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
 import kotlinx.coroutines.runBlocking
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -25,7 +25,7 @@ import kotlin.uuid.Uuid
  */
 class Sqlx4kSqldelightDriverPostgresTest {
 
-    private val postgres = PostgreSQLContainer<Nothing>("postgres:16-alpine").apply {
+    private val postgres = PostgreSQLContainer("postgres:16-alpine").apply {
         withDatabaseName("test_db")
         withUsername("test")
         withPassword("test")

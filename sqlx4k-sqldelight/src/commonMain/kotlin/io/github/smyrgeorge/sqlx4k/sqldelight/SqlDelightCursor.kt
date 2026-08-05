@@ -10,7 +10,7 @@ import kotlinx.datetime.LocalTime
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-@Suppress("unused", "RedundantNullableReturnType")
+@Suppress("unused")
 class SqlDelightCursor(
     result: ResultSet
 ) : SqlCursor {
@@ -33,7 +33,7 @@ class SqlDelightCursor(
         }
     }
 
-    override fun getBytes(index: Int): ByteArray? = error("This feature is not yes supported.")
+    override fun getBytes(index: Int): ByteArray = error("This feature is not yes supported.")
     override fun getDouble(index: Int): Double? = getString(index)?.toDouble()
     fun getShort(index: Int): Short? = getString(index)?.toShort()
     fun getInt(index: Int): Int? = getString(index)?.toInt()
