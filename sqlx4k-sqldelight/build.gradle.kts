@@ -27,6 +27,7 @@ kotlin {
             dependencies {
                 implementation(libs.sqlx4k.postgres)
                 implementation(libs.sqlx4k.mysql)
+                implementation(libs.sqlx4k.sqlite)
                 implementation(libs.testcontainers)
                 implementation(libs.testcontainers.postgresql)
                 implementation(libs.testcontainers.mysql)

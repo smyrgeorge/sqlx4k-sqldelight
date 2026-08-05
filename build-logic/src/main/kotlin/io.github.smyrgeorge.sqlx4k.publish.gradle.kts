@@ -10,6 +10,7 @@ val descriptions: Map<String, String> = mapOf(
     "sqlx4k-sqldelight" to "Sqldelight support for sqlx4k.",
     "sqlx4k-sqldelight-dialect-mysql" to "Sqldelight support for sqlx4k (MySQL dialect).",
     "sqlx4k-sqldelight-dialect-postgres" to "Sqldelight support for sqlx4k (PostgreSQL dialect).",
+    "sqlx4k-sqldelight-dialect-sqlite" to "Sqldelight support for sqlx4k (SQLite dialect).",
 )
 
 extensions.configure<MavenPublishBaseExtension> {

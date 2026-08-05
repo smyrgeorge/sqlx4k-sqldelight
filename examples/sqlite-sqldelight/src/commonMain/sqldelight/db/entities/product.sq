@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS product (
+  id INTEGER PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL,
+  price REAL NOT NULL,
+  quantity INTEGER NOT NULL,
+  image BLOB,
+  created_at TEXT NOT NULL
+);
+
+insert:
+INSERT INTO product(id, name, price, quantity, image, created_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+getAllProducts:
+SELECT * FROM product;
+
+getMaxPrice:
+SELECT MAX(price) FROM product;
+
+countProducts:
+SELECT COUNT(*) FROM product;

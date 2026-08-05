@@ -1,0 +1,21 @@
+plugins {
+    id("io.github.smyrgeorge.sqlx4k.multiplatform.jvm")
+    id("io.github.smyrgeorge.sqlx4k.publish")
+    id("io.github.smyrgeorge.sqlx4k.dokka")
+}
+
+kotlin {
+    explicitApi()
+    sourceSets {
+        configureEach {
+            languageSettings.progressiveMode = true
+        }
+        jvmMain {
+            dependencies {
+                api(libs.sqldelight.sqlite.dialect)
+                api(libs.sqldelight.dialect.api)
+                compileOnly(libs.sqldelight.compiler.env)
+            }
+        }
+    }
+}

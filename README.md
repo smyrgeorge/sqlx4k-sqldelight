@@ -12,8 +12,8 @@ and SQLite supported.
 
 ---
 
-This repository only contains the necessary parts for the `sqldelight` integration.
-If you are looking the driver implementation, you can find it here: https://github.com/smyrgeorge/sqlx4k
+This repository only contains the necessary parts for the `sqldelight` integration. If you are looking the driver
+implementation, you can find it here: https://github.com/smyrgeorge/sqlx4k
 
 📖 [Documentation](https://smyrgeorge.github.io/sqlx4k-sqldelight/)
 
@@ -41,7 +41,8 @@ sqldelight {
         generateAsync = true
         packageName = "db.entities"
         dialect("io.github.smyrgeorge:sqlx4k-sqldelight-dialect-postgres:x.y.z")
-        // Or 'io.github.smyrgeorge:sqlx4k-sqldelight-dialect-mysql:x.y.z' for MySQl/MariaDB. 
+        // Or 'io.github.smyrgeorge:sqlx4k-sqldelight-dialect-mysql:x.y.z' for MySQl/MariaDB.
+        // Or 'io.github.smyrgeorge:sqlx4k-sqldelight-dialect-sqlite:x.y.z' for SQLite.
     }
 }
 ```
