@@ -5,7 +5,7 @@
 ![GitHub License](https://img.shields.io/github/license/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/smyrgeorge/sqlx4k-sqldelight)
 ![GitHub issues](https://img.shields.io/github/issues/smyrgeorge/sqlx4k-sqldelight)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.4.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.4.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL, MySQL/MariaDB,
 and SQLite supported.
