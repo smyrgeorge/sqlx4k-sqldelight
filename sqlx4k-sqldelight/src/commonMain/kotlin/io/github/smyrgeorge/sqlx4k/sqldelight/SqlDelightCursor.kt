@@ -32,7 +32,7 @@ class SqlDelightCursor(
         }
     }
 
-    override fun getBytes(index: Int): ByteArray = error("This feature is not yes supported.")
+    override fun getBytes(index: Int): ByteArray = error("This feature is not yet supported.")
     override fun getDouble(index: Int): Double? = getString(index)?.toDouble()
     fun getShort(index: Int): Short? = getString(index)?.toShort()
     fun getInt(index: Int): Int? = getString(index)?.toInt()
