@@ -7,3 +7,5 @@ module:sqlx4k-sqldelight-dialect-mysql
 io.github.smyrgeorge.sqlx4k.sqldelight.dialect.mysql
 module:sqlx4k-sqldelight-dialect-postgres
 io.github.smyrgeorge.sqlx4k.sqldelight.dialect.postgres
+module:sqlx4k-sqldelight-dialect-sqlite
+io.github.smyrgeorge.sqlx4k.sqldelight.dialect.sqlite
