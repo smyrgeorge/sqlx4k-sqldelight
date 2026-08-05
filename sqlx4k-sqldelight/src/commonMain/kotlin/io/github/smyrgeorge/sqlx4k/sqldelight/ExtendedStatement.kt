@@ -1,12 +1,23 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import io.github.smyrgeorge.sqlx4k.Dialect
 import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Statement
 import io.github.smyrgeorge.sqlx4k.ValueEncoderRegistry
+import io.github.smyrgeorge.sqlx4k.impl.extensions.toTimestampString
 import io.github.smyrgeorge.sqlx4k.impl.statement.AbstractStatement
+import io.github.smyrgeorge.sqlx4k.impl.types.NoWrappingTuple
+import io.github.smyrgeorge.sqlx4k.impl.types.SqlRawLiteral
 import io.github.smyrgeorge.sqlx4k.impl.types.TypedNull
 import kotlin.reflect.KClass
+import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 
 /**
  * The `ExtendedStatement` class provides an implementation that extends the functionality
@@ -101,7 +112,7 @@ class ExtendedStatement(sql: String) : AbstractStatement(sql) {
      * @param encoders The `ValueEncoderRegistry` that provides the appropriate encoders for the parameter values.
      * @return A string representing the fully rendered SQL statement with all parameters encoded.
      */
-    override fun render(encoders: ValueEncoderRegistry): String =
+    fun render(encoders: ValueEncoderRegistry = ValueEncoderRegistry.EMPTY): String =
         sql.renderPgParameters(encoders)
 
     /**
@@ -132,6 +143,76 @@ class ExtendedStatement(sql: String) : AbstractStatement(sql) {
             }
             null
         }
+
+    /**
+     * Encodes a value into its SQL literal representation.
+     *
+     * Handles `null`, strings (with single-quote escaping), characters, numbers, booleans,
+     * temporal types, UUIDs, enums, raw SQL literals, and collections (rendered as tuples).
+     * For any other type, an encoder is looked up in the provided registry.
+     *
+     * @param value The value to encode.
+     * @param encoders The `ValueEncoderRegistry` used to encode custom types.
+     * @return The SQL literal representation of the value.
+     * @throws SQLError if the type of the value is unsupported and no appropriate encoder is found.
+     */
+    private fun encode(value: Any?, encoders: ValueEncoderRegistry): String {
+        return when (value) {
+            null -> "null"
+            is TypedNull -> "null"
+            is String -> {
+                // Fast path: if no single quote present, avoid replace allocation
+                if (value.indexOf('\'') < 0) "'${value}'"
+                // https://stackoverflow.com/questions/12316953/insert-text-with-single-quotes-in-postgresql
+                // https://stackoverflow.com/questions/9596652/how-to-escape-apostrophe-a-single-quote-in-mysql
+                // https://stackoverflow.com/questions/603572/escape-single-quote-character-for-use-in-an-sqlite-query
+                else "'${value.replace("'", "''")}'"
+            }
+
+            is Char -> "'${if (value == '\'') "''" else value}'"
+            is Boolean, is Byte, is Short, is Int, is Long, is Float, is Double -> value.toString()
+            is Instant -> "'${value.toTimestampString()}'"
+            is LocalDate, is LocalTime, is LocalDateTime -> "'${value}'"
+            is Uuid -> "'${value}'"
+            is Enum<*> -> "'${value.name}'"
+            is SqlRawLiteral -> value.sql
+            is Iterable<*> -> encodeTuple(value, encoders)
+            is BooleanArray -> encodeTuple(value.asIterable(), encoders)
+            is ShortArray -> encodeTuple(value.asIterable(), encoders)
+            is IntArray -> encodeTuple(value.asIterable(), encoders)
+            is LongArray -> encodeTuple(value.asIterable(), encoders)
+            is FloatArray -> encodeTuple(value.asIterable(), encoders)
+            is DoubleArray -> encodeTuple(value.asIterable(), encoders)
+            is Array<*> -> encodeTuple(value.asIterable(), encoders)
+            is NoWrappingTuple -> encodeTuple(value.value, encoders, wrapInParenthesis = false)
+
+            else -> {
+                val encoder = encoders.get(value::class)
+                    ?: SQLError(
+                        code = SQLError.Code.MissingValueConverter,
+                        message = "Could not encode value of type ${value::class.simpleName}"
+                    ).raise()
+                encode(encoder.encode(value), encoders)
+            }
+        }
+    }
+
+    /**
+     * Encodes a collection of values as a SQL tuple like `(a, b, c)`.
+     * Uses [encode] for each element; nulls become `null` without quotes.
+     */
+    private fun encodeTuple(
+        values: Iterable<*>,
+        encoders: ValueEncoderRegistry,
+        wrapInParenthesis: Boolean = true,
+    ): String {
+        if (!values.iterator().hasNext()) SQLError(
+            code = SQLError.Code.EmptyCollection,
+            message = "Cannot expand an empty collection as a SQL parameter"
+        ).raise()
+        return if (wrapInParenthesis) values.joinToString(", ", "(", ")") { encode(it, encoders) }
+        else values.joinToString(", ") { encode(it, encoders) }
+    }
 
     private fun extractPgParameters(): List<Int> {
         var maxIndex = 0
