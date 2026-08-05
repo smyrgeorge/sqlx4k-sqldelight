@@ -12,7 +12,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
@@ -24,7 +23,6 @@ import kotlin.uuid.Uuid
  * - Result set iteration
  * - Transaction support
  */
-@OptIn(ExperimentalUuidApi::class)
 class Sqlx4kSqldelightDriverMySqlTest {
 
     private val mysql = MySQLContainer<Nothing>("mysql:8.0").apply {

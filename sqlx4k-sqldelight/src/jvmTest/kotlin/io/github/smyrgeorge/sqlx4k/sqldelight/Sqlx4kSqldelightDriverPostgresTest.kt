@@ -12,7 +12,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
@@ -24,7 +23,6 @@ import kotlin.uuid.Uuid
  * - Result set iteration
  * - Transaction support
  */
-@OptIn(ExperimentalUuidApi::class)
 class Sqlx4kSqldelightDriverPostgresTest {
 
     private val postgres = PostgreSQLContainer<Nothing>("postgres:16-alpine").apply {
@@ -239,7 +237,6 @@ class Sqlx4kSqldelightDriverPostgresTest {
                     while (cursor.next().await()) {
                         cursor.getString(0)?.let { foundNames.add(it) }
                     }
-                    Unit
                 }
             },
             parameters = 3

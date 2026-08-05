@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package io.github.smyrgeorge.sqlx4k.sqldelight
 
 import io.github.smyrgeorge.sqlx4k.Dialect
@@ -11,13 +9,12 @@ import io.github.smyrgeorge.sqlx4k.impl.statement.AbstractStatement
 import io.github.smyrgeorge.sqlx4k.impl.types.NoWrappingTuple
 import io.github.smyrgeorge.sqlx4k.impl.types.SqlRawLiteral
 import io.github.smyrgeorge.sqlx4k.impl.types.TypedNull
-import kotlin.reflect.KClass
-import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlin.reflect.KClass
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 /**
  * The `ExtendedStatement` class provides an implementation that extends the functionality
