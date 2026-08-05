@@ -2,7 +2,7 @@
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.jvm
 kotlin = "2.4.10"
 # https://github.com/Kotlin/kotlinx-datetime
-kotlinx-datetime = "0.8.0-0.6.x-compat"
+kotlinx-datetime = "0.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.11.0"
 # https://github.com/vanniktech/gradle-maven-publish-plugin
@@ -16,7 +16,7 @@ stately = "2.1.0"
 # https://github.com/smyrgeorge/sqlx4k
 sqlx4k = "1.13.0"
 # https://github.com/testcontainers/testcontainers-java
-testcontainers = "1.21.4"
+testcontainers = "2.0.5"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
